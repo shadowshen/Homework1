@@ -12,32 +12,34 @@ namespace ConsoleApplication1
         {
             int productID, amount;
             int number = 0;
-            Product[] arrProducts = {new Product(1,"二手蘋果手機",8700),
-                                     new Product(2,"C# CookBook",568),
-                                     new Product(3,"HP筆電",16888)};
+            Product[] arrProducts = {new Product("二手蘋果手機",8700,"XX商店"),
+                                     new Product("C# CookBook",568,"XX商店"),
+                                     new Product("HP筆電",16888,"XX商店"),
+                                     new Product("哈利波特影集",2250,"OO商店"),
+                                     new Product("無間道三部曲",1090,"OO商店")};
             shoppingCart SC = new shoppingCart();
-            Console.WriteLine("請輸入要購買的商品\n(1)二手蘋果手機 售價：$8700元\n(2)C# CookBook 售價：$568元\n(3)HP筆電 售價：$16888元\n(4)結帳");
+            Console.WriteLine("請輸入要購買的商品\n(1)二手蘋果手機 售價：$8700元\n(2)C# CookBook 售價：$568元\n(3)HP筆電 售價：$16888元\n(4)哈利波特影集 售價：$2250\n(5)無間道三部曲 售價：$1090\n(6)結帳");
 
             do
             {
-                productID = GetUserInput("請輸入您要的產品，或請按(4)進行結帳>");
+                productID = GetUserInput("請輸入您要的產品，或請按(6)進行結帳>");
                 number = productID - 1;
-                if (number <= 2)
+                if (number <= (arrProducts.Length-1))
                 {
                     amount = GetUserInput("請輸入您要購買的數量，若要重新選擇請輸入0>");
                     if (Convert.ToInt32(amount) != 0)
                     {
-                        Console.WriteLine("你的選擇是({0}){1}，單價是{2}元，數量：{3}，小計：{4}元\n", productID, arrProducts[number].productName,
+                        Console.WriteLine("你的選擇是{5}的({0}){1}，單價是{2}元，數量：{3}，小計：{4}元\n", arrProducts[number].ID, arrProducts[number].productName,
                                                                                                        arrProducts[number].productPrice,
-                                                                                                       amount, (amount * arrProducts[number].productPrice));
+                                                                                                       amount, (amount * arrProducts[number].productPrice), arrProducts[number].storeName);
                         SC.addcarList(arrProducts[number], Convert.ToInt32(amount));
                     }
                 }
-                else if (number > 3)
+                else if (number > (arrProducts.Length))
                 {
                     Console.WriteLine("你輸入的選擇無效");
                 }
-            } while (number != 3);
+            } while (number != (arrProducts.Length));
 
             if (SC.carList == null)
             {
@@ -64,15 +66,19 @@ namespace ConsoleApplication1
 
         class Product
         {
-            public int productID;
+            private static int productID;
+            public int ID;
             public string productName;
             public int productPrice;
+            public string storeName;
 
-            public Product(int productID, string productName, int productPrice)
+            public Product( string productName, int productPrice, string storeName)
             {
-                this.productID = productID;
+                productID++;
+                this.ID = productID;
                 this.productName = productName;
                 this.productPrice = productPrice;
+                this.storeName = storeName;
             }
         }
 
@@ -83,7 +89,7 @@ namespace ConsoleApplication1
 
             public void addcarList(Product selectProduct, int input)
             {
-                carList = carList + "項目： (" + selectProduct.productID + ") " + selectProduct.productName + "，數量：" + input + "，小計：" + (selectProduct.productPrice * Convert.ToInt32(input)) + "元\n";
+                carList = carList + "項目："+selectProduct.storeName+"- (" + selectProduct.ID + ") " + selectProduct.productName + "，數量：" + input + "，小計：" + (selectProduct.productPrice * Convert.ToInt32(input)) + "元\n";
                 total = total + (selectProduct.productPrice * Convert.ToInt32(input));
             }
         }
