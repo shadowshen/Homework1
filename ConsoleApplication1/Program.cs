@@ -4,6 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
+using ConsoleApplication1.Biz;
+using ConsoleApplication1.Model;
+
+
 namespace ConsoleApplication1
 {
     class Program
@@ -17,8 +21,14 @@ namespace ConsoleApplication1
                                      new Product("HP筆電",16888,"XX商店"),
                                      new Product("哈利波特影集",2250,"OO商店"),
                                      new Product("無間道三部曲",1090,"OO商店")};
-            shoppingCart SC = new shoppingCart();
-            Console.WriteLine("請輸入要購買的商品\n(1)二手蘋果手機 售價：$8700元\n(2)C# CookBook 售價：$568元\n(3)HP筆電 售價：$16888元\n(4)哈利波特影集 售價：$2250\n(5)無間道三部曲 售價：$1090\n(6)結帳");
+            ShoppingCart shoppingCart = new ShoppingCart();
+
+            Console.WriteLine("=======商品列表=======");
+            for (int i = 0; i < arrProducts.Length;i++ )
+            {
+                Console.WriteLine("({0}){1} 售價：${2} 店家：{3}",arrProducts[i].ID,arrProducts[i].productName,arrProducts[i].productPrice,arrProducts[i].storeName);
+            }
+            Console.WriteLine("({0})結帳",(arrProducts.Length+1));
 
             do
             {
@@ -32,7 +42,7 @@ namespace ConsoleApplication1
                         Console.WriteLine("你的選擇是{5}的({0}){1}，單價是{2}元，數量：{3}，小計：{4}元\n", arrProducts[number].ID, arrProducts[number].productName,
                                                                                                        arrProducts[number].productPrice,
                                                                                                        amount, (amount * arrProducts[number].productPrice), arrProducts[number].storeName);
-                        SC.addcarList(arrProducts[number], Convert.ToInt32(amount));
+                        shoppingCart.addcarList(arrProducts[number], Convert.ToInt32(amount));
                     }
                 }
                 else if (number > (arrProducts.Length))
@@ -41,11 +51,11 @@ namespace ConsoleApplication1
                 }
             } while (number != (arrProducts.Length));
 
-            if (SC.carList == null)
+            if (shoppingCart.carList == null)
             {
-                SC.carList = "您的購物車是空的";
+                shoppingCart.carList = "您的購物車是空的";
             }
-            Console.Write("\n您本次的消費明細如下：\n{0}\n本次消費金額{1}元", SC.carList, SC.total);
+            Console.Write("\n您本次的消費明細如下：\n{0}\n本次消費金額{1}元", shoppingCart.carList, shoppingCart.total);
             Console.ReadLine();
         }
 
@@ -62,36 +72,6 @@ namespace ConsoleApplication1
                 checkNumber = GetUserInput(writeTitle);
             }
             return checkNumber;
-        }
-
-        class Product
-        {
-            private static int productID;
-            public int ID;
-            public string productName;
-            public int productPrice;
-            public string storeName;
-
-            public Product( string productName, int productPrice, string storeName)
-            {
-                productID++;
-                this.ID = productID;
-                this.productName = productName;
-                this.productPrice = productPrice;
-                this.storeName = storeName;
-            }
-        }
-
-        class shoppingCart
-        {
-            public int total;
-            public string carList = "";
-
-            public void addcarList(Product selectProduct, int input)
-            {
-                carList = carList + "項目："+selectProduct.storeName+"- (" + selectProduct.ID + ") " + selectProduct.productName + "，數量：" + input + "，小計：" + (selectProduct.productPrice * Convert.ToInt32(input)) + "元\n";
-                total = total + (selectProduct.productPrice * Convert.ToInt32(input));
-            }
         }
     }
 }
