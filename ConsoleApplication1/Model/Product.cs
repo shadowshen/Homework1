@@ -6,21 +6,13 @@ using System.Threading.Tasks;
 
 namespace ConsoleApplication1.Model
 {
-    class Product
+    public class Product
     {
-        private static int productID;
-        public int ID;
-        public string productName;
-        public int productPrice;
-        public string storeName;
-
-        public Product(string productName, int productPrice, string storeName)
-        {
-            productID++;
-            this.ID = productID;
-            this.productName = productName;
-            this.productPrice = productPrice;
-            this.storeName = storeName;
-        }
+        public int ID { get; set; }
+        public string ProductName { get; set; }
+        public int ProductPrice { get; set; }
+        public string StoreName { get; set; }
+        public int Amount { get; set; }
+        public int DiscountPrice { get; set; }
     }
 }

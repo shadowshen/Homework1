@@ -1,76 +1,116 @@
-﻿using System;
+﻿using ConsoleApplication1.Biz;
+using ConsoleApplication1.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Text.RegularExpressions;
-using ConsoleApplication1.Biz;
-using ConsoleApplication1.Model;
-
 
 namespace ConsoleApplication1
 {
-    class Program
+    internal class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             int productID, amount;
             int number = 0;
-            Product[] arrProducts = {new Product("二手蘋果手機",8700,"XX商店"),
-                                     new Product("C# CookBook",568,"XX商店"),
-                                     new Product("HP筆電",16888,"XX商店"),
-                                     new Product("哈利波特影集",2250,"OO商店"),
-                                     new Product("無間道三部曲",1090,"OO商店")};
-            ShoppingCart shoppingCart = new ShoppingCart();
+            int total = 0;
+
+            List<Product> p = new List<Product>
+            {
+                new Product { ID = 1, ProductName = "二手蘋果手機", ProductPrice = 8700, StoreName = "XX商店" },
+                new Product { ID = 2, ProductName = "C# cookbook", ProductPrice = 568, StoreName = "XX商店" },
+                new Product { ID = 3, ProductName = "HP 筆電", ProductPrice = 16888, StoreName = "XX商店" },
+                new Product { ID = 4, ProductName = "哈利波特影集", ProductPrice = 2250, StoreName = "OO商店" },
+                new Product { ID = 5, ProductName = "無間道三部曲", ProductPrice = 1090, StoreName = "OO商店" }
+            };
+
+            List<Shipment> s = new List<Shipment>
+            {
+                new Shipment { ID = 1, ShipmentName = "宅急便", Fee = 60 },
+                new Shipment { ID = 2, ShipmentName = "郵局", Fee = 40 },
+                new Shipment { ID = 3, ShipmentName = "超商店到店", Fee = 50 }
+            };
+
+            List<Product> cartList = new List<Product>();
 
             Console.WriteLine("=======商品列表=======");
-            for (int i = 0; i < arrProducts.Length;i++ )
+            for (int i = 0; i < p.Count; i++)
             {
-                Console.WriteLine("({0}){1} 售價：${2} 店家：{3}",arrProducts[i].ID,arrProducts[i].productName,arrProducts[i].productPrice,arrProducts[i].storeName);
+                Console.WriteLine("({0}){1} 售價：${2} 店家：{3}", p[i].ID, p[i].ProductName, p[i].ProductPrice, p[i].StoreName);
             }
-            Console.WriteLine("({0})結帳",(arrProducts.Length+1));
+            Console.WriteLine("({0})結帳", (p.Count) + 1);
 
             do
             {
-                productID = GetUserInput("請輸入您要的產品，或請按(6)進行結帳>");
+                productID = GetUserSeletProduct("請輸入您要的產品，或請按(6)進行結帳>", p);
+
+                if (productID == p.Count + 1) break;
+
                 number = productID - 1;
-                if (number <= (arrProducts.Length-1))
+                amount = GetUserInput("請輸入您要購買的數量>", p.Count);
+
+                if (productID < (p.Count + 1) && amount != 0)
                 {
-                    amount = GetUserInput("請輸入您要購買的數量，若要重新選擇請輸入0>");
-                    if (Convert.ToInt32(amount) != 0)
+                    if (cartList.Where(x => x.ProductName == p[number].ProductName).Any())
                     {
-                        Console.WriteLine("你的選擇是{5}的({0}){1}，單價是{2}元，數量：{3}，小計：{4}元\n", arrProducts[number].ID, arrProducts[number].productName,
-                                                                                                       arrProducts[number].productPrice,
-                                                                                                       amount, (amount * arrProducts[number].productPrice), arrProducts[number].storeName);
-                        shoppingCart.addcarList(arrProducts[number], Convert.ToInt32(amount));
+                        for (int i = 0; i < cartList.Count; i++)
+                        {
+                            if (cartList[i].ProductName == p[number].ProductName)
+                            {
+                                cartList[i].Amount += amount;
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        cartList.Add(new Product { ID = p[number].ID, ProductName = p[number].ProductName, Amount = amount, ProductPrice = p[number].ProductPrice, StoreName = p[number].StoreName });
                     }
                 }
-                else if (number > (arrProducts.Length))
-                {
-                    Console.WriteLine("你輸入的選擇無效");
-                }
-            } while (number != (arrProducts.Length));
+            } while (productID != (p.Count) + 1);
 
-            if (shoppingCart.carList == null)
-            {
-                shoppingCart.carList = "您的購物車是空的";
-            }
-            Console.Write("\n您本次的消費明細如下：\n{0}\n本次消費金額{1}元", shoppingCart.carList, shoppingCart.total);
-            Console.ReadLine();
+            Shipment shipment = new Shipment();
+            shipment.ShowShipment(s);
+
+            Dictionary<int, Shipment> dicSelectShipment = new Dictionary<int, Shipment>();
+            dicSelectShipment = shipment.SelectShipment(cartList, s);
+
+            ShoppingCart shoppingCart = new ShoppingCart();
+            total = shoppingCart.StoreOnSale(cartList);
+
+            shoppingCart.ShowDetail(cartList, total, dicSelectShipment);
         }
 
-        static int GetUserInput(string writeTitle)
+        private static int GetUserInput(string writeTitle, int productCount)
+        {
+            Console.WriteLine(writeTitle);
+            string selectProduct = null;
+            selectProduct = Console.ReadLine();
+
+            bool canConvert = int.TryParse(selectProduct, out int checkNumber);
+
+            if (canConvert == false || checkNumber == 0)
+            {
+                Console.WriteLine("錯誤！！您輸入的數量有誤！");
+                checkNumber = GetUserInput(writeTitle, productCount);
+            }
+
+            return checkNumber;
+        }
+
+        private static int GetUserSeletProduct(string writeTitle, List<Product> productList)
         {
             string selectProduct = null;
             Console.WriteLine(writeTitle);
             selectProduct = Console.ReadLine();
-            int checkNumber = 0;
-            bool canConvert = int.TryParse(selectProduct, out checkNumber);
-            if (canConvert == false)
+
+            bool canConvert = int.TryParse(selectProduct, out int checkNumber);
+
+            if (productList.Where(x => x.ID == checkNumber).Count() == 0 && checkNumber != productList.Count + 1)
             {
-                Console.WriteLine("錯誤！！您輸入了非數字的字元！");
-                checkNumber = GetUserInput(writeTitle);
+                Console.WriteLine("你輸入的產品不存在");
+                checkNumber = GetUserSeletProduct(writeTitle, productList);
             }
+
             return checkNumber;
         }
     }

@@ -18,3 +18,4 @@ E:\git\ConsoleApplication1\ConsoleApplication1\bin\Release\ConsoleApplication1.p
 E:\git\ConsoleApplication1\ConsoleApplication1\obj\Release\ConsoleApplication1.csprojResolveAssemblyReference.cache
 E:\git\ConsoleApplication1\ConsoleApplication1\obj\Release\ConsoleApplication1.exe.manifest
 E:\git\ConsoleApplication1\ConsoleApplication1\obj\Release\ConsoleApplication1.application
+E:\git\ConsoleApplication1\ConsoleApplication1\obj\Release\ConsoleApplication1.csproj.CoreCompileInputs.cache
