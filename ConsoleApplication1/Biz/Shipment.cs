@@ -5,13 +5,12 @@ using System.Linq;
 
 namespace ConsoleApplication1.Biz
 {
-    internal class Shipment
+    class ShipmentBiz
     {
-        public int ID { get; set; }
-        public string ShipmentName { get; set; }
-        public int Fee { get; set; }
-        public string StoreName { get; set; }
-
+        /// <summary>
+        /// Shows the shipment.
+        /// </summary>
+        /// <param name="s">The s.</param>
         public void ShowShipment(List<Shipment> s)
         {
             Console.WriteLine("=======物流選擇列表=======");
@@ -21,6 +20,12 @@ namespace ConsoleApplication1.Biz
             }
         }
 
+        /// <summary>
+        /// Selects the shipment.
+        /// </summary>
+        /// <param name="carList">The car list.</param>
+        /// <param name="s">The s.</param>
+        /// <returns></returns>
         public Dictionary<int, Shipment> SelectShipment(List<Product> carList, List<Shipment> s)
         {
             int carlistStoreCount = carList.Select(x => x.StoreName).Distinct().Count();

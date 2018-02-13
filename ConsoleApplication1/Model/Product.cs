@@ -15,4 +15,12 @@ namespace ConsoleApplication1.Model
         public int Amount { get; set; }
         public int DiscountPrice { get; set; }
     }
+    internal class Shipment
+    {
+        public int ID { get; set; }
+        public string ShipmentName { get; set; }
+        public int Fee { get; set; }
+        public string StoreName { get; set; }
+
+    }
 }

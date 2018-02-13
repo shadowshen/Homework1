@@ -1,56 +1,76 @@
-﻿using System;
+﻿using ConsoleApplication1.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ConsoleApplication1.Model;
-using ConsoleApplication1.Biz;
 
 namespace ConsoleApplication1.Biz
 {
-    class ShoppingCart
+    internal class ShoppingCart
     {
-
+        /// <summary>
+        /// Stores the on sale.
+        /// </summary>
+        /// <param name="shoppingCart">The shopping cart.</param>
+        /// <returns></returns>
         public int StoreOnSale(List<Product> shoppingCart)
         {
             List<string> carlistStoreCount = shoppingCart.Select(x => x.StoreName).Distinct().ToList();
 
-            int total = 0;
+            int carListTotal = 0;
             for (int i = 0; i < shoppingCart.Count; i++)
             {
                 if (shoppingCart[i].StoreName == "OO商店")
                 {
-
                     if (shoppingCart[i].Amount >= 3)
                     {
                         double discount = 0.7;
                         shoppingCart[i].DiscountPrice = Convert.ToInt32((shoppingCart[i].ProductPrice * shoppingCart[i].Amount) * discount);
-                        total += shoppingCart[i].DiscountPrice;
+                        carListTotal += shoppingCart[i].DiscountPrice;
                     }
                     else if (shoppingCart[i].Amount >= 2)
                     {
                         double discount = 0.9;
                         shoppingCart[i].DiscountPrice = Convert.ToInt32((shoppingCart[i].ProductPrice * shoppingCart[i].Amount) * discount);
-                        total += shoppingCart[i].DiscountPrice;
+                        carListTotal += shoppingCart[i].DiscountPrice;
                     }
                     else
                     {
-                        total += shoppingCart[i].ProductPrice * shoppingCart[i].Amount;
+                        carListTotal += shoppingCart[i].ProductPrice * shoppingCart[i].Amount;
                     }
-
                 }
                 else if (shoppingCart[i].StoreName == "XX商店")
                 {
-                    total += shoppingCart[i].ProductPrice * shoppingCart[i].Amount;
+                    carListTotal += shoppingCart[i].ProductPrice * shoppingCart[i].Amount;
                 }
             }
-
-            return total;
+            return carListTotal;
         }
+        /// <summary>
+        /// Merges the shopping cart same product.
+        /// </summary>
+        /// <param name="shoppingCart">The shopping cart.</param>
+        /// <returns></returns>
+        public List<Product> MergeShoppingCartSameProduct(List<Product> shoppingCart)
+        {
+            var listByProduct = shoppingCart.GroupBy(x => new { x.ID, x.ProductName, x.ProductPrice, x.StoreName }).Select(y => new Product
+            {
+                ID = y.First().ID,
+                ProductName = y.First().ProductName,
+                ProductPrice = y.First().ProductPrice,
+                StoreName = y.First().StoreName,
+                Amount = y.Sum(z => z.Amount)
+            }).ToList();
 
+            return listByProduct;
+        }
+        /// <summary>
+        /// Shows the detail.
+        /// </summary>
+        /// <param name="shoppingCart">The shopping cart.</param>
+        /// <param name="total">The total.</param>
+        /// <param name="dicSelectShipment">The dic select shipment.</param>
         public void ShowDetail(List<Product> shoppingCart, int total, Dictionary<int, Shipment> dicSelectShipment)
         {
-
             if (shoppingCart.Count == 0)
             {
                 Console.Write("您的購物車是空的");
@@ -58,7 +78,6 @@ namespace ConsoleApplication1.Biz
             }
             else
             {
-                
                 Console.Write("您的購物車明細如下：\n");
                 for (int i = 0; i < shoppingCart.Count; i++)
                 {
@@ -74,7 +93,6 @@ namespace ConsoleApplication1.Biz
 
                 Console.WriteLine("此次消費的總金額是{0}元", total);
                 Console.ReadLine();
-
             }
         }
     }

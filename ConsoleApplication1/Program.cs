@@ -12,7 +12,7 @@ namespace ConsoleApplication1
         {
             int productID, amount;
             int number = 0;
-            int total = 0;
+            int costTotal = 0;
 
             List<Product> p = new List<Product>
             {
@@ -39,6 +39,7 @@ namespace ConsoleApplication1
             }
             Console.WriteLine("({0})結帳", (p.Count) + 1);
 
+            
             do
             {
                 productID = GetUserSeletProduct("請輸入您要的產品，或請按(6)進行結帳>", p);
@@ -48,38 +49,29 @@ namespace ConsoleApplication1
                 number = productID - 1;
                 amount = GetUserInput("請輸入您要購買的數量>", p.Count);
 
-                if (productID < (p.Count + 1) && amount != 0)
-                {
-                    if (cartList.Where(x => x.ProductName == p[number].ProductName).Any())
-                    {
-                        for (int i = 0; i < cartList.Count; i++)
-                        {
-                            if (cartList[i].ProductName == p[number].ProductName)
-                            {
-                                cartList[i].Amount += amount;
-                                break;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        cartList.Add(new Product { ID = p[number].ID, ProductName = p[number].ProductName, Amount = amount, ProductPrice = p[number].ProductPrice, StoreName = p[number].StoreName });
-                    }
-                }
+                cartList.Add(new Product { ID = p[number].ID, ProductName = p[number].ProductName, Amount = amount, ProductPrice = p[number].ProductPrice, StoreName = p[number].StoreName });
             } while (productID != (p.Count) + 1);
 
-            Shipment shipment = new Shipment();
-            shipment.ShowShipment(s);
+            ShoppingCart shoppingCart = new ShoppingCart();
+            cartList = shoppingCart.MergeShoppingCartSameProduct(cartList);
+
+            ShipmentBiz shipmentBiz = new ShipmentBiz();
+            shipmentBiz.ShowShipment(s);
 
             Dictionary<int, Shipment> dicSelectShipment = new Dictionary<int, Shipment>();
-            dicSelectShipment = shipment.SelectShipment(cartList, s);
+            dicSelectShipment = shipmentBiz.SelectShipment(cartList, s);
 
-            ShoppingCart shoppingCart = new ShoppingCart();
-            total = shoppingCart.StoreOnSale(cartList);
+            costTotal = shoppingCart.StoreOnSale(cartList);
 
-            shoppingCart.ShowDetail(cartList, total, dicSelectShipment);
+            shoppingCart.ShowDetail(cartList, costTotal, dicSelectShipment);
         }
 
+        /// <summary>
+        /// Gets the user input.
+        /// </summary>
+        /// <param name="writeTitle">The write title.</param>
+        /// <param name="productCount">The product count.</param>
+        /// <returns></returns>
         private static int GetUserInput(string writeTitle, int productCount)
         {
             Console.WriteLine(writeTitle);
@@ -97,6 +89,12 @@ namespace ConsoleApplication1
             return checkNumber;
         }
 
+        /// <summary>
+        /// Gets the user selet product.
+        /// </summary>
+        /// <param name="writeTitle">The write title.</param>
+        /// <param name="productList">The product list.</param>
+        /// <returns></returns>
         private static int GetUserSeletProduct(string writeTitle, List<Product> productList)
         {
             string selectProduct = null;
