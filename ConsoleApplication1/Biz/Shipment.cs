@@ -52,7 +52,7 @@ namespace ConsoleApplication1.Biz
                 }
                 else
                 {
-                    dicSelectShipment.Add(i, new Shipment() { ID = i, ShipmentName = s[i].ShipmentName, Fee = Convert.ToInt32(s[checkNumber - 1].Fee * 0.8), StoreName = item });
+                    dicSelectShipment.Add(i, new Shipment() { ID = i, ShipmentName = s[i].ShipmentName, Fee =s[checkNumber - 1].Fee, StoreName = item });
                 }
                 i += 1;
             }
